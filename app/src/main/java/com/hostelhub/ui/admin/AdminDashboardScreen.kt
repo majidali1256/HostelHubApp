@@ -28,13 +28,27 @@ import com.hostelhub.ui.theme.*
 import java.text.NumberFormat
 import java.util.Locale
 
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.saveable.rememberSaveable
+
+enum class AdminTab(val title: String, val icon: ImageVector) {
+    OVERVIEW("Overview", Icons.Default.Dashboard),
+    MODERATION("Moderation Queue", Icons.Default.VerifiedUser),
+    USERS("User Management", Icons.Default.People),
+    FRAUD("Fraud & Security", Icons.Default.Security),
+    AGREEMENTS("Agreements & Rent", Icons.Default.Assignment)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(
     navController: NavController,
+    initialTab: AdminTab = AdminTab.OVERVIEW,
     viewModel: AdminDashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var selectedTab by rememberSaveable { mutableStateOf(initialTab.name) }
     val scrollState = rememberScrollState()
 
     com.hostelhub.ui.components.navigation.HostelHubScaffold(
@@ -50,22 +64,33 @@ fun AdminDashboardScreen(
         userRole = "admin",
         username = "System Admin"
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
+            AdminSectionBar(
+                selectedTab = selectedTab,
+                onTabSelected = { selectedTab = it.name },
+                pendingCount = uiState.stats.pendingReports
+            )
+
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    when (selectedTab) {
+                        AdminTab.OVERVIEW.name -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(scrollState)
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
                     // System Health Banner
                     SystemStatusBanner()
 
@@ -142,80 +167,213 @@ fun AdminDashboardScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Section Title: Quick Actions & Navigation
-                    Text(
-                        text = "Moderation & Administration Portals",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                        // Section Title: Quick Actions & Navigation
+                        Text(
+                            text = "Moderation & Administration Portals",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                    // Navigation Card 1: User Management
-                    AdminNavCard(
-                        title = "User Directory & Access Control",
-                        subtitle = "Search registered users, verify identity documents, toggle suspensions, or change user roles.",
-                        icon = Icons.Default.SupervisorAccount,
-                        iconColor = Primary,
-                        badgeCount = null,
-                        onClick = { navController.navigate(Screen.UserManagement.route) }
-                    )
+                        // Navigation Card 1: User Management
+                        AdminNavCard(
+                            title = "User Directory & Access Control",
+                            subtitle = "Inspect customer identities, verify student IDs, suspend accounts, or assign admin privileges.",
+                            icon = Icons.Default.People,
+                            iconColor = Primary,
+                            badgeCount = null,
+                            onClick = { selectedTab = AdminTab.USERS.name }
+                        )
 
-                    // Navigation Card 2: Moderation Queue
-                    AdminNavCard(
-                        title = "Hostel Listing Moderation Queue",
-                        subtitle = "Review pending property submissions, inspect AI risk analysis scores, approve or reject listings.",
-                        icon = Icons.Default.VerifiedUser,
-                        iconColor = Warning,
-                        badgeCount = if (uiState.stats.pendingReports > 0) uiState.stats.pendingReports else null,
-                        onClick = { navController.navigate(Screen.ModerationQueue.route) }
-                    )
+                        // Navigation Card 2: Moderation Queue
+                        AdminNavCard(
+                            title = "Hostel Listing Moderation Queue",
+                            subtitle = "Review pending property submissions, inspect AI risk analysis scores, approve or reject listings.",
+                            icon = Icons.Default.VerifiedUser,
+                            iconColor = Warning,
+                            badgeCount = if (uiState.stats.pendingReports > 0) uiState.stats.pendingReports else null,
+                            onClick = { selectedTab = AdminTab.MODERATION.name }
+                        )
 
-                    // Navigation Card 3: Fraud Detection & Security Reports
-                    AdminNavCard(
-                        title = "Fraud Detection & Security Reports",
-                        subtitle = "Review user fraud reports, inspect perceptual hash alerts, and ban fraudulent listings immediately.",
-                        icon = Icons.Default.Security,
-                        iconColor = Error,
-                        badgeCount = null,
-                        onClick = { navController.navigate(Screen.AdminFraudDashboard.route) }
-                    )
+                        // Navigation Card 3: Fraud Detection & Security Reports
+                        AdminNavCard(
+                            title = "Fraud Detection & Security Reports",
+                            subtitle = "Review user fraud reports, inspect perceptual hash alerts, and ban fraudulent listings immediately.",
+                            icon = Icons.Default.Security,
+                            iconColor = Error,
+                            badgeCount = null,
+                            onClick = { selectedTab = AdminTab.FRAUD.name }
+                        )
 
-                    // Analytical Chart Representation Card
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.TrendingUp, contentDescription = null, tint = Primary)
-                                Spacer(modifier = Modifier.width(8.dp))
+                        // Navigation Card 4: Agreements & Rent Index
+                        AdminNavCard(
+                            title = "Lease Agreements & Fair Rent Index",
+                            subtitle = "Audit digital tenancy agreements and monitor city-wide rent compliance benchmarks.",
+                            icon = Icons.Default.Assignment,
+                            iconColor = Secondary,
+                            badgeCount = null,
+                            onClick = { selectedTab = AdminTab.AGREEMENTS.name }
+                        )
+
+                        // Analytical Chart Representation Card
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.TrendingUp, contentDescription = null, tint = Primary)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "System Growth Metrics (30-Day Trend)",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "System Growth Metrics (30-Day Trend)",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold
+                                    text = "Platform user retention stands at 94.2% with verified owners experiencing an average 88% occupancy rate across Islamabad and Lahore sectors.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    MetricSummaryChip(label = "Avg Booking Value", value = "PKR 28,500")
+                                    MetricSummaryChip(label = "Platform Cut (6%)", value = "PKR 1,710")
+                                    MetricSummaryChip(label = "Trust Index", value = "96.4/100")
+                                }
                             }
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = "Platform user retention stands at 94.2% with verified owners experiencing an average 88% occupancy rate across Islamabad and Lahore sectors.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+                AdminTab.MODERATION.name -> ModerationQueueContent()
+                AdminTab.USERS.name -> UserManagementContent()
+                AdminTab.FRAUD.name -> AdminFraudDashboardContent()
+                AdminTab.AGREEMENTS.name -> AdminAgreementsTabContent()
+            }
+        }
+    }
+    }
+}
+}
+
+@Composable
+fun AdminSectionBar(
+    selectedTab: String,
+    onTabSelected: (AdminTab) -> Unit,
+    pendingCount: Int
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 4.dp
+    ) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items(AdminTab.values()) { tab ->
+                val isSelected = selectedTab == tab.name
+                val bgColor = if (isSelected) Primary else MaterialTheme.colorScheme.surfaceVariant
+                val contentColor = if (isSelected) TextOnPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = bgColor,
+                    modifier = Modifier.clickable { onTabSelected(tab) }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(tab.icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(tab.title, color = contentColor, style = MaterialTheme.typography.labelMedium, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium)
+                        if (tab == AdminTab.MODERATION && pendingCount > 0) {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isSelected) Warning else Error,
+                                modifier = Modifier.size(20.dp)
                             ) {
-                                MetricSummaryChip(label = "Avg Booking Value", value = "PKR 28,500")
-                                MetricSummaryChip(label = "Platform Cut (6%)", value = "PKR 1,710")
-                                MetricSummaryChip(label = "Trust Index", value = "96.4/100")
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(pendingCount.toString(), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
 
-                    Spacer(modifier = Modifier.height(24.dp))
+@Composable
+fun AdminAgreementsTabContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Assignment, contentDescription = null, tint = Primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Lease Agreements Audit & Compliance",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Text(
+                    text = "All digital tenancy agreements executed through HostelHub are encrypted with SHA-256 signatures. Currently monitoring 142 active lease contracts.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Calculate, contentDescription = null, tint = Secondary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "City-Wide Fair Rent Index Regulation",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Text(
+                    text = "Fair Rent Index thresholds are enforced across Islamabad (H-12, F-10, G-9) and Lahore sectors to prevent predatory price gouging.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    MetricSummaryChip(label = "Islamabad H-12 Avg", value = "PKR 24,000/mo")
+                    MetricSummaryChip(label = "Lahore Johar Avg", value = "PKR 22,500/mo")
                 }
             }
         }

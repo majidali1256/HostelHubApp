@@ -33,9 +33,9 @@ import com.hostelhub.ui.owner.OwnerHostelListScreen
 import com.hostelhub.ui.search.FiltersScreen
 import com.hostelhub.ui.fraud.FraudReportScreen
 import com.hostelhub.ui.admin.AdminDashboardScreen
-import com.hostelhub.ui.admin.UserManagementScreen
 import com.hostelhub.ui.admin.ModerationQueueScreen
 import com.hostelhub.ui.admin.AdminFraudDashboardScreen
+import com.hostelhub.ui.admin.AdminTab
 import com.hostelhub.ui.fairrent.FairRentEstimatorScreen
 
 @Composable
@@ -352,6 +352,16 @@ fun HostelHubNavGraph(
             )
         }
         
+        composable(Screen.Wishlist.route) {
+            com.hostelhub.ui.wishlist.WishlistScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHostelDetail = { hostelId ->
+                    navController.navigate(Screen.HostelDetail.createRoute(hostelId))
+                },
+                onNavigateRoute = { route -> navController.navigate(route) }
+            )
+        }
+
         composable(Screen.MapSearch.route) {
             com.hostelhub.ui.map.MapSearchScreen(
                 hostels = emptyList(),
@@ -389,15 +399,15 @@ fun HostelHubNavGraph(
 
         // ===== ADMIN & MODERATION PLATFORM (MODULE 2) =====
         composable(Screen.AdminDashboard.route) {
-            AdminDashboardScreen(navController = navController)
+            AdminDashboardScreen(navController = navController, initialTab = AdminTab.OVERVIEW)
         }
 
         composable(Screen.UserManagement.route) {
-            UserManagementScreen(navController = navController)
+            AdminDashboardScreen(navController = navController, initialTab = AdminTab.USERS)
         }
 
         composable(Screen.ModerationQueue.route) {
-            ModerationQueueScreen(navController = navController)
+            AdminDashboardScreen(navController = navController, initialTab = AdminTab.MODERATION)
         }
 
         // Module 10: Price Guidance (Fair Rent Estimator)
@@ -410,7 +420,7 @@ fun HostelHubNavGraph(
 
         // Module 11: Trust Score & Fraud Detection
         composable(Screen.AdminFraudDashboard.route) {
-            AdminFraudDashboardScreen(navController = navController)
+            AdminDashboardScreen(navController = navController, initialTab = AdminTab.FRAUD)
         }
     }
 }

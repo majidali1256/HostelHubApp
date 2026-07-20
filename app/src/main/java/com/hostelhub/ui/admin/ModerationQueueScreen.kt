@@ -29,8 +29,6 @@ fun ModerationQueueScreen(
     navController: NavController,
     viewModel: ModerationQueueViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -49,13 +47,26 @@ fun ModerationQueueScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
-        ) {
-            // Action Feedback Banner
+        ModerationQueueContent(
+            viewModel = viewModel,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+@Composable
+fun ModerationQueueContent(
+    viewModel: ModerationQueueViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Action Feedback Banner
             if (!uiState.actionMessage.isNullOrBlank()) {
                 Surface(
                     color = Success.copy(alpha = 0.15f),
@@ -128,7 +139,6 @@ fun ModerationQueueScreen(
             }
         }
     }
-}
 
 @Composable
 fun PendingHostelCard(

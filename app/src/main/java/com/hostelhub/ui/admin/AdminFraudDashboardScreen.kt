@@ -33,8 +33,6 @@ fun AdminFraudDashboardScreen(
     navController: NavController,
     viewModel: AdminFraudViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
     com.hostelhub.ui.components.navigation.HostelHubScaffold(
         title = "Fraud Detection & Security",
         currentRoute = com.hostelhub.ui.navigation.Screen.AdminFraudDashboard.route,
@@ -48,12 +46,25 @@ fun AdminFraudDashboardScreen(
         userRole = "admin",
         username = "System Admin"
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // Stats Summary Grid
+        AdminFraudDashboardContent(
+            viewModel = viewModel,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+@Composable
+fun AdminFraudDashboardContent(
+    viewModel: AdminFraudViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        // Stats Summary Grid
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,7 +191,6 @@ fun AdminFraudDashboardScreen(
             }
         }
     }
-}
 
 @Composable
 fun FraudStatCard(

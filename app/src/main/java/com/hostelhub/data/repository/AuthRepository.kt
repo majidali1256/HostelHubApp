@@ -5,9 +5,11 @@ import com.hostelhub.BuildConfig
 import com.hostelhub.data.api.AuthApi
 import com.hostelhub.data.local.TokenManager
 import com.hostelhub.data.model.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,15 +24,15 @@ class AuthRepository @Inject constructor(
     val currentUserId: Flow<String?> = tokenManager.userId
     val userRole: Flow<String?> = tokenManager.userRole
     
-    suspend fun login(email: String, password: String): Result<User> {
+    suspend fun login(email: String, password: String): Result<User> = withContext(Dispatchers.IO) {
         Log.d(TAG, "Attempting login for email: $email")
 
         // Demo mode - bypass server and use mock data
         if (BuildConfig.DEMO_MODE) {
-            return demoLogin(email, password)
+            return@withContext demoLogin(email, password)
         }
 
-        return try {
+        try {
             val response = authApi.login(LoginRequest(email, password))
             Log.d(TAG, "Login response code: ${response.code()}")
             if (response.isSuccessful && response.body() != null) {

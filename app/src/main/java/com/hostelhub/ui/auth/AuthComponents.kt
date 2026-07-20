@@ -14,10 +14,12 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -30,66 +32,39 @@ import com.hostelhub.ui.theme.*
 fun AuthHeader() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
     ) {
-        // Large Hero Icon Box
+        val logoBrush = remember {
+            androidx.compose.ui.graphics.Brush.linearGradient(
+                colors = listOf(Color(0xFF3B82F6), Color(0xFF1D4ED8))
+            )
+        }
         Box(
             modifier = Modifier
-                .size(90.dp)
-                .shadow(16.dp, RoundedCornerShape(28.dp), spotColor = Primary.copy(alpha = 0.5f))
-                .clip(RoundedCornerShape(28.dp))
-                .background(Primary),
+                .size(60.dp)
+                .shadow(12.dp, RoundedCornerShape(16.dp), spotColor = Primary.copy(alpha = 0.5f))
+                .clip(RoundedCornerShape(16.dp))
+                .background(logoBrush),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Home,
-                contentDescription = "HostelHub Logo",
-                modifier = Modifier.size(48.dp),
+                contentDescription = "Hostel Hub Logo",
+                modifier = Modifier.size(34.dp),
                 tint = TextOnPrimary
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "HostelHub",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 36.sp,
+            text = "Hostel Hub",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontSize = 26.sp,
                 fontWeight = FontWeight.ExtraBold
             ),
             color = Primary
         )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = "Home, away from Home.",
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Light,
-                letterSpacing = 0.5.sp
-            ),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Feature Chips
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            FeaturePill("Home For Students", Icons.Default.Person)
-            Spacer(modifier = Modifier.width(8.dp))
-            FeaturePill("Verified Listing", Icons.Default.CheckCircle)
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            FeaturePill("Instant Booking", Icons.Default.Schedule)
-        }
     }
 }
 
@@ -293,6 +268,114 @@ fun SocialLoginStack(
 }
 
 @Composable
+fun SocialLoginRow(
+    onGoogleClick: () -> Unit = {},
+    onFacebookClick: () -> Unit = {}
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // Compact Divider
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Divider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                text = "Or continue with",
+                modifier = Modifier.padding(horizontal = 8.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
+            Divider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+        }
+
+        // Side by side row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Google Button
+            OutlinedButton(
+                onClick = onGoogleClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFF4285F4),
+                        modifier = Modifier.size(18.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "G",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.ExtraBold)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Google",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                }
+            }
+
+            // Facebook Button
+            Button(
+                onClick = onFacebookClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1877F2),
+                    contentColor = Color.White
+                ),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "f",
+                                color = Color(0xFF1877F2),
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.ExtraBold)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Facebook",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun AuthFooter() {
     Text(
         text = "By continuing, you agree to our Terms and Privacy.",
@@ -425,4 +508,43 @@ fun SocialAccountChooserDialog(
             }
         }
     )
+}
+
+@Composable
+fun RoleChip(
+    label: String,
+    icon: ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
+            .height(44.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        color = if (selected) Primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+        border = BorderStroke(1.dp, if (selected) Primary else MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (selected) Primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                ),
+                color = if (selected) Primary else MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }

@@ -4,7 +4,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.unit.sp
 import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +19,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +58,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+    var isGridView by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(appliedFilters) {
         appliedFilters?.let { opts ->
@@ -246,13 +250,99 @@ fun HomeScreen(
                 }
             }
             
-            // Hostel List (~26px cards with photo header overlay buttons & nested CTA)
-            items(uiState.filteredHostels, key = { it.id }) { hostel ->
-                HostelCard(
-                    hostel = hostel,
-                    onClick = { onNavigateToHostel(hostel.id) },
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
-                )
+            // View Mode Header & Toggle
+            if (uiState.filteredHostels.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Featured Hostels (${uiState.filteredHostels.size})",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                                .padding(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                onClick = { isGridView = false },
+                                shape = RoundedCornerShape(8.dp),
+                                color = if (!isGridView) Primary else Color.Transparent,
+                                modifier = Modifier.size(30.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.ViewList,
+                                        contentDescription = "List View",
+                                        tint = if (!isGridView) TextOnPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Surface(
+                                onClick = { isGridView = true },
+                                shape = RoundedCornerShape(8.dp),
+                                color = if (isGridView) Primary else Color.Transparent,
+                                modifier = Modifier.size(30.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Default.GridView,
+                                        contentDescription = "Grid View",
+                                        tint = if (isGridView) TextOnPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Hostel List or Grid
+            if (isGridView) {
+                items(uiState.filteredHostels.chunked(2)) { pair ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        HostelGridCard(
+                            hostel = pair[0],
+                            onClick = { onNavigateToHostel(pair[0].id) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (pair.size > 1) {
+                            HostelGridCard(
+                                hostel = pair[1],
+                                onClick = { onNavigateToHostel(pair[1].id) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            } else {
+                items(uiState.filteredHostels, key = { it.id }) { hostel ->
+                    HostelCard(
+                        hostel = hostel,
+                        onClick = { onNavigateToHostel(hostel.id) },
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                    )
+                }
             }
         }
     }
@@ -715,6 +805,156 @@ private fun AmenityChip(amenity: String) {
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+fun HostelGridCard(
+    hostel: Hostel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isFavorite by remember { mutableStateOf(false) }
+    val isDark = isAppInDarkTheme()
+    val cardElevation = if (isDark) 0.dp else 8.dp
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = cardElevation,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = Color.Black.copy(alpha = 0.15f)
+            )
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = if (isDark) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)) else null
+    ) {
+        Column {
+            // Photo Header (~140dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(hostel.resolvedImages.firstOrNull() ?: "")
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = hostel.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                // Dark Gradient Overlay
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f)),
+                                startY = 70f
+                            )
+                        )
+                )
+
+                // Top Right: Circular Overlay Favorite Button
+                TripGlideOverlayIconButton(
+                    icon = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    onClick = { isFavorite = !isFavorite },
+                    isFavorite = isFavorite,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+
+                // Bottom Left: Price Pill
+                Surface(
+                    shape = CircleShape,
+                    color = Primary,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = "Rs ${hostel.price.toInt()}/mo",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = TextOnPrimary,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Details
+            Column(
+                modifier = Modifier.padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = hostel.name,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.LocationOn,
+                        null,
+                        modifier = Modifier.size(13.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text(
+                        text = hostel.location,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Star,
+                            null,
+                            tint = Warning,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(Modifier.width(3.dp))
+                        Text(
+                            text = String.format("%.1f", hostel.rating),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Surface(
+                        shape = CircleShape,
+                        color = Secondary.copy(alpha = 0.12f)
+                    ) {
+                        Text(
+                            text = hostel.category,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp),
+                            color = Secondary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
     }
 }

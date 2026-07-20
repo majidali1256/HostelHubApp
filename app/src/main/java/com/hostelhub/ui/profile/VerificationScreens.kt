@@ -3,6 +3,7 @@ package com.hostelhub.ui.profile
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -327,8 +328,7 @@ fun SettingsScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val isDarkPref by ThemePreferenceManager.getThemeModeFlow(context).collectAsState(initial = null)
-    val darkMode = isDarkPref ?: isAppInDarkTheme()
+    val themeMode by ThemePreferenceManager.getThemeModeFlow(context).collectAsState(initial = ThemePreferenceManager.MODE_LIGHT)
     var notifications by remember { mutableStateOf(true) }
     var emailNotifications by remember { mutableStateOf(true) }
     
@@ -352,17 +352,65 @@ fun SettingsScreen(
         ) {
             // Appearance
             SettingsSection(title = "Appearance") {
-                SettingsToggleItem(
-                    icon = Icons.Default.Settings,
-                    title = "Dark Mode",
-                    subtitle = "Use dark theme across all screens",
-                    checked = darkMode,
-                    onCheckedChange = { isChecked ->
-                        coroutineScope.launch {
-                            ThemePreferenceManager.setDarkMode(context, isChecked)
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    Text(
+                        text = "App Theme",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Choose your preferred theme appearance across all screens",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(bottom = 14.dp)
+                    )
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val options = listOf(
+                            Triple(ThemePreferenceManager.MODE_LIGHT, "Light", Icons.Default.WbSunny),
+                            Triple(ThemePreferenceManager.MODE_DARK, "Dark", Icons.Default.DarkMode),
+                            Triple(ThemePreferenceManager.MODE_SYSTEM, "System", Icons.Default.SettingsBrightness)
+                        )
+                        options.forEach { (mode, label, icon) ->
+                            val isSelected = themeMode == mode
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            ThemePreferenceManager.setThemeMode(context, mode)
+                                        }
+                                    },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) Primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                border = BorderStroke(1.dp, if (isSelected) Primary else MaterialTheme.colorScheme.outlineVariant)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = label,
+                                        tint = if (isSelected) TextOnPrimary else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium),
+                                        color = if (isSelected) TextOnPrimary else MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
                         }
                     }
-                )
+                }
             }
             
             // Notifications

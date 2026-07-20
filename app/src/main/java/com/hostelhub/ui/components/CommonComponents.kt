@@ -633,7 +633,7 @@ fun TripGlideCardFooterAction(
         label = "ctaScale"
     )
     val isDark = isAppInDarkTheme()
-    val bgColor = if (isDark) MaterialTheme.colorScheme.primary else Color(0xFF111827).copy(alpha = 0.85f)
+    val bgColor = if (isDark) MaterialTheme.colorScheme.primary else Color(0xFF1E40AF)
     
     Surface(
         shape = CircleShape,
@@ -666,7 +666,7 @@ fun TripGlideCardFooterAction(
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = text,
-                        tint = Color(0xFF111827),
+                        tint = Color(0xFF1E40AF),
                         modifier = Modifier.size(18.dp)
                     )
                 }

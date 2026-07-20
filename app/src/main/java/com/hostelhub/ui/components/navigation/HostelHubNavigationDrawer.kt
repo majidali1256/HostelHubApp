@@ -226,7 +226,7 @@ fun HostelHubNavigationDrawer(
                         }
 
                         // Admin & Moderation Hub
-                        if (userRole.equals("admin", ignoreCase = true) || userRole.equals("owner", ignoreCase = true)) {
+                        if (userRole.equals("admin", ignoreCase = true)) {
                             item {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 SectionHeaderPill(
@@ -237,18 +237,15 @@ fun HostelHubNavigationDrawer(
                             }
                             item {
                                 DrawerNavItem3D(
-                                    title = "Admin Dashboard",
+                                    title = "Admin Section",
                                     icon = Icons.Default.AdminPanelSettings,
-                                    isSelected = currentRoute == Screen.AdminDashboard.route,
+                                    isSelected = currentRoute in listOf(
+                                        Screen.AdminDashboard.route,
+                                        Screen.UserManagement.route,
+                                        Screen.ModerationQueue.route,
+                                        Screen.AdminFraudDashboard.route
+                                    ),
                                     onClick = { onNavigate(Screen.AdminDashboard.route) }
-                                )
-                            }
-                            item {
-                                DrawerNavItem3D(
-                                    title = "Fraud Detection & Security",
-                                    icon = Icons.Default.Security,
-                                    isSelected = currentRoute == Screen.AdminFraudDashboard.route,
-                                    onClick = { onNavigate(Screen.AdminFraudDashboard.route) }
                                 )
                             }
                         }
@@ -450,34 +447,17 @@ fun HostelHubNavigationDrawer(
 
 @Composable
 private fun SectionHeaderPill(title: String, icon: ImageVector) {
-    Surface(
-        color = Primary.copy(alpha = 0.08f),
-        shape = CircleShape,
-        border = BorderStroke(0.5.dp, Primary.copy(alpha = 0.25f)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Primary.copy(alpha = 0.8f),
-                modifier = Modifier.size(14.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.2.sp
-                ),
-                color = Primary.copy(alpha = 0.9f)
-            )
-        }
-    }
+    Text(
+        text = title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.8.sp
+        ),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+    )
 }
 
 @Composable

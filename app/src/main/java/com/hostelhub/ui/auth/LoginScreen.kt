@@ -2,17 +2,14 @@ package com.hostelhub.ui.auth
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -47,14 +44,13 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
-    // Web App aligned embedded states
+    // Embedded states
     var isForgotPassword by remember { mutableStateOf(false) }
     var forgotStep by remember { mutableStateOf(1) } // 1: email, 2: code, 3: password
     var forgotEmail by remember { mutableStateOf("") }
     var resetCode by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
-    var showAccountChooser by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -64,35 +60,33 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Web App Aligned Hero Header
+            // Main Icon with Name
             AuthHeader()
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Elevated Card Container exactly matching web app Login.tsx (max-w-[400px])
+            // Elevated Card Container
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = 400.dp),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Tab Switcher inside Card (matching web app Login.tsx)
+                    // Tab Switcher inside Card
                     if (!isForgotPassword) {
                         AuthTabSwitcher(
                             isSignUp = false,
@@ -109,21 +103,21 @@ fun LoginScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
+                                .padding(bottom = 12.dp),
+                            shape = RoundedCornerShape(10.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = Error.copy(alpha = 0.12f)
                             )
                         ) {
                             Row(
-                                modifier = Modifier.padding(12.dp),
+                                modifier = Modifier.padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     Icons.Default.Error,
                                     contentDescription = null,
                                     tint = Error,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
@@ -140,21 +134,21 @@ fun LoginScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
+                                .padding(bottom = 12.dp),
+                            shape = RoundedCornerShape(10.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = Success.copy(alpha = 0.12f)
                             )
                         ) {
                             Row(
-                                modifier = Modifier.padding(12.dp),
+                                modifier = Modifier.padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     Icons.Default.CheckCircle,
                                     contentDescription = null,
                                     tint = Success,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
@@ -171,7 +165,7 @@ fun LoginScreen(
                         // Step indicator dots
                         Row(
                             horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
                         ) {
                             for (i in 1..3) {
                                 Box(
@@ -187,11 +181,11 @@ fun LoginScreen(
                         when (forgotStep) {
                             1 -> {
                                 Text(
-                                    text = "Enter your email to receive a 6-digit reset code.",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = "Enter your email to receive reset code.",
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp)
+                                    modifier = Modifier.padding(bottom = 12.dp)
                                 )
 
                                 OutlinedTextField(
@@ -206,10 +200,10 @@ fun LoginScreen(
                                         imeAction = ImeAction.Done
                                     ),
                                     singleLine = true,
-                                    shape = RoundedCornerShape(14.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 Button(
                                     onClick = {
@@ -219,13 +213,13 @@ fun LoginScreen(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp),
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     enabled = !uiState.isLoading && forgotEmail.isNotBlank()
                                 ) {
                                     if (uiState.isLoading) {
                                         CircularProgressIndicator(
-                                            modifier = Modifier.size(22.dp),
+                                            modifier = Modifier.size(20.dp),
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     } else {
@@ -238,11 +232,11 @@ fun LoginScreen(
                             }
                             2 -> {
                                 Text(
-                                    text = "Enter the 6-digit code sent to $forgotEmail",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = "Enter 6-digit code sent to $forgotEmail",
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp)
+                                    modifier = Modifier.padding(bottom = 12.dp)
                                 )
 
                                 OutlinedTextField(
@@ -262,10 +256,10 @@ fun LoginScreen(
                                         textAlign = TextAlign.Center
                                     ),
                                     singleLine = true,
-                                    shape = RoundedCornerShape(14.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 Button(
                                     onClick = {
@@ -275,13 +269,13 @@ fun LoginScreen(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp),
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     enabled = !uiState.isLoading && resetCode.length == 6
                                 ) {
                                     if (uiState.isLoading) {
                                         CircularProgressIndicator(
-                                            modifier = Modifier.size(22.dp),
+                                            modifier = Modifier.size(20.dp),
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     } else {
@@ -292,22 +286,22 @@ fun LoginScreen(
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 TextButton(
                                     onClick = { forgotStep = 1; resetCode = ""; viewModel.clearError() },
                                     modifier = Modifier.align(Alignment.CenterHorizontally)
                                 ) {
-                                    Text("← Change Email", style = MaterialTheme.typography.bodyMedium)
+                                    Text("← Change Email", style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                             3 -> {
                                 Text(
                                     text = "Enter your new password.",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp)
+                                    modifier = Modifier.padding(bottom = 12.dp)
                                 )
 
                                 OutlinedTextField(
@@ -320,10 +314,10 @@ fun LoginScreen(
                                     visualTransformation = PasswordVisualTransformation(),
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
                                     singleLine = true,
-                                    shape = RoundedCornerShape(14.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
 
                                 OutlinedTextField(
                                     value = confirmNewPassword,
@@ -335,10 +329,10 @@ fun LoginScreen(
                                     visualTransformation = PasswordVisualTransformation(),
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                                     singleLine = true,
-                                    shape = RoundedCornerShape(14.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 Button(
                                     onClick = {
@@ -351,13 +345,13 @@ fun LoginScreen(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(52.dp),
-                                    shape = RoundedCornerShape(14.dp),
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     enabled = !uiState.isLoading && newPassword.length >= 6 && newPassword == confirmNewPassword
                                 ) {
                                     if (uiState.isLoading) {
                                         CircularProgressIndicator(
-                                            modifier = Modifier.size(22.dp),
+                                            modifier = Modifier.size(20.dp),
                                             color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     } else {
@@ -370,22 +364,21 @@ fun LoginScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         TextButton(
                             onClick = { isForgotPassword = false; forgotStep = 1; viewModel.clearError() },
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         ) {
-                            Text("← Back to Login", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                            Text("← Back to Login", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold))
                         }
                     } else {
-                        // Standard Login Form mirroring web app Login.tsx
-                        // Email Field
+                        // Standard Login Form
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = "Email",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                                modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                             )
                             OutlinedTextField(
@@ -404,27 +397,27 @@ fun LoginScreen(
                                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                                 ),
                                 singleLine = true,
-                                shape = RoundedCornerShape(14.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         // Password Field with inline "Forgot Password?" right above
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp, bottom = 6.dp),
+                                modifier = Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp, bottom = 4.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     text = "Password",
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                                 )
                                 Text(
                                     text = "Forgot Password?",
-                                    style = MaterialTheme.typography.labelMedium.copy(
+                                    style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.SemiBold,
                                         color = Primary
                                     ),
@@ -461,26 +454,26 @@ fun LoginScreen(
                                     onDone = { viewModel.login(onLoginSuccess) }
                                 ),
                                 singleLine = true,
-                                shape = RoundedCornerShape(14.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
 
                         // Sign In Button
                         Button(
                             onClick = { viewModel.login(onLoginSuccess) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(54.dp),
-                            shape = RoundedCornerShape(14.dp),
+                                .height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Primary),
                             elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp),
                             enabled = !uiState.isLoading
                         ) {
                             if (uiState.isLoading) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(20.dp),
                                     color = TextOnPrimary
                                 )
                             } else {
@@ -491,52 +484,105 @@ fun LoginScreen(
                                 )
                             }
                         }
-                    }
 
-                    // Social Login Stack (Google & Facebook) exact parity with Login.tsx
-                    if (!isForgotPassword) {
-                        SocialLoginStack(
+                        // Compact Social Login Buttons
+                        SocialLoginRow(
                             onGoogleClick = {
-                                showAccountChooser = "Google"
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://10.0.2.2:5001/api/auth/google?origin=hostelhub://oauth"))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    android.widget.Toast.makeText(context, "Could not open browser for Google Sign-In", android.widget.Toast.LENGTH_SHORT).show()
+                                }
                             },
                             onFacebookClick = {
-                                showAccountChooser = "Facebook"
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://10.0.2.2:5001/api/auth/facebook?origin=hostelhub://oauth"))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    android.widget.Toast.makeText(context, "Could not open browser for Facebook Sign-In", android.widget.Toast.LENGTH_SHORT).show()
+                                }
                             }
                         )
                     }
                 }
             }
+        }
+    }
+}
 
-            // Footer Terms exactly matching web app Login.tsx
-            AuthFooter()
+@Composable
+fun ForgotPasswordScreen(
+    onNavigateBack: () -> Unit
+) {
+    var forgotEmail by remember { mutableStateOf("") }
+    val viewModel: LoginViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-            if (showAccountChooser != null) {
-                SocialAccountChooserDialog(
-                    provider = showAccountChooser!!,
-                    onDismiss = { showAccountChooser = null },
-                    onAccountSelected = { account ->
-                        val currentProvider = showAccountChooser!!
-                        showAccountChooser = null
-                        viewModel.socialLogin(
-                            provider = currentProvider,
-                            providerId = account.id,
-                            email = account.email,
-                            name = account.name
-                        ) {
-                            onLoginSuccess()
-                        }
-                    },
-                    onOpenBrowserOAuth = {
-                        val currentProvider = showAccountChooser!!
-                        showAccountChooser = null
-                        val providerPath = if (currentProvider.equals("Google", ignoreCase = true)) "google" else "facebook"
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("http://10.0.2.2:5003/api/auth/$providerPath?origin=hostelhub://oauth")
-                        )
-                        context.startActivity(intent)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AuthHeader()
+            Spacer(modifier = Modifier.height(16.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 400.dp),
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Reset Password",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Primary
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Enter your email address to receive verification code.",
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    OutlinedTextField(
+                        value = forgotEmail,
+                        onValueChange = { forgotEmail = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Email") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            viewModel.forgotPassword(forgotEmail) {
+                                onNavigateBack()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        enabled = !uiState.isLoading && forgotEmail.isNotBlank()
+                    ) {
+                        Text("Send Code", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
                     }
-                )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    TextButton(onClick = onNavigateBack) {
+                        Text("← Back to Login")
+                    }
+                }
             }
         }
     }

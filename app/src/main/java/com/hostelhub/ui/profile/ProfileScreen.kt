@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.hostelhub.data.model.UserRole
 import com.hostelhub.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -216,74 +217,52 @@ fun ProfileScreen(
                         onClick = onNavigateToAgreements
                     )
 
-                    Spacer(Modifier.height(16.dp))
+                    if (uiState.user?.role == UserRole.OWNER) {
+                        Spacer(Modifier.height(16.dp))
+                        
+                        Text(
+                            "Property Owner Hub",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Secondary,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
 
-                    Text(
-                        "Platform Administration",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Primary,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                        ProfileMenuItem(
+                            icon = Icons.Outlined.HomeWork,
+                            title = "My Properties & Rooms",
+                            subtitle = "Manage listings, rooms inventory & pricing",
+                            onClick = onNavigateToOwnerHostelList
+                        )
+                        
+                        ProfileMenuItem(
+                            icon = Icons.Outlined.Assignment,
+                            title = "Tenancy Contracts & E-Signatures",
+                            subtitle = "Generate digital leases & check tenant signatures",
+                            onClick = onNavigateToAgreements
+                        )
+                        
+                        ProfileMenuItem(
+                            icon = Icons.Outlined.FactCheck,
+                            title = "Payment Verification Hub",
+                            subtitle = "Review receipts & confirm student bookings",
+                            onClick = onNavigateToBookingVerification
+                        )
 
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.AdminPanelSettings,
-                        title = "Admin & Moderation Hub",
-                        subtitle = "Manage users, verify IDs & moderate listings",
-                        onClick = onNavigateToAdminDashboard
-                    )
-                    
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.Security,
-                        title = "Fraud Detection & Security Reports",
-                        subtitle = "Review scam alerts, AI risk scores & ban listings",
-                        onClick = onNavigateToAdminFraudDashboard
-                    )
-                    
-                    Spacer(Modifier.height(16.dp))
-                    
-                    Text(
-                        "Property Owner Hub",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Secondary,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                        ProfileMenuItem(
+                            icon = Icons.Outlined.RateReview,
+                            title = "Student Reviews & Trust System",
+                            subtitle = "Monitor ratings & post official host responses",
+                            onClick = onNavigateToOwnerReviewManagement
+                        )
 
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.HomeWork,
-                        title = "My Properties & Rooms",
-                        subtitle = "Manage listings, rooms inventory & pricing",
-                        onClick = onNavigateToOwnerHostelList
-                    )
-                    
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.Assignment,
-                        title = "Tenancy Contracts & E-Signatures",
-                        subtitle = "Generate digital leases & check tenant signatures",
-                        onClick = onNavigateToAgreements
-                    )
-                    
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.FactCheck,
-                        title = "Payment Verification Hub",
-                        subtitle = "Review receipts & confirm student bookings",
-                        onClick = onNavigateToBookingVerification
-                    )
-
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.RateReview,
-                        title = "Student Reviews & Trust System",
-                        subtitle = "Monitor ratings & post official host responses",
-                        onClick = onNavigateToOwnerReviewManagement
-                    )
-
-                    ProfileMenuItem(
-                        icon = Icons.Outlined.AutoAwesome,
-                        title = "AI Fair Rent Estimator",
-                        subtitle = "Benchmark market valuation & check price fairness",
-                        onClick = onNavigateToFairRentEstimator
-                    )
+                        ProfileMenuItem(
+                            icon = Icons.Outlined.AutoAwesome,
+                            title = "AI Fair Rent Estimator",
+                            subtitle = "Benchmark market valuation & check price fairness",
+                            onClick = onNavigateToFairRentEstimator
+                        )
+                    }
                     
                     Spacer(Modifier.height(16.dp))
                     

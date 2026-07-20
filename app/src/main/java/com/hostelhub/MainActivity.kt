@@ -31,8 +31,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         setContent {
-            val isDarkPref by ThemePreferenceManager.getThemeModeFlow(this).collectAsState(initial = null)
-            val darkTheme = isDarkPref ?: isSystemInDarkTheme()
+            val themeMode by ThemePreferenceManager.getThemeModeFlow(this).collectAsState(initial = ThemePreferenceManager.MODE_LIGHT)
+            val darkTheme = when (themeMode) {
+                ThemePreferenceManager.MODE_DARK -> true
+                ThemePreferenceManager.MODE_SYSTEM -> isSystemInDarkTheme()
+                else -> false // MODE_LIGHT default
+            }
             
             HostelHubTheme(darkTheme = darkTheme) {
                 Surface(

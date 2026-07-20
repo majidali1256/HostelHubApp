@@ -30,9 +30,6 @@ fun UserManagementScreen(
     navController: NavController,
     viewModel: UserManagementViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    var searchInput by remember { mutableStateOf(uiState.searchQuery) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,13 +48,28 @@ fun UserManagementScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
-        ) {
-            // Action Feedback Banner
+        UserManagementContent(
+            viewModel = viewModel,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserManagementContent(
+    viewModel: UserManagementViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var searchInput by remember { mutableStateOf(uiState.searchQuery) }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Action Feedback Banner
             if (!uiState.actionMessage.isNullOrBlank()) {
                 Surface(
                     color = Success.copy(alpha = 0.15f),
@@ -211,7 +223,6 @@ fun UserManagementScreen(
             }
         }
     }
-}
 
 @Composable
 fun UserCard(

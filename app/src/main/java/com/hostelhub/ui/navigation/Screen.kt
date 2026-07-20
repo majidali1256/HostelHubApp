@@ -47,6 +47,7 @@ sealed class Screen(val route: String) {
         fun createRoute(hostelId: String) = "reviews/$hostelId"
     }
     object Settings : Screen("settings")
+    object Wishlist : Screen("wishlist")
     
     // New screens
     object PropertyListing : Screen("property_listing")

@@ -8,11 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Hostel Hub Brand Colors -->
-    <color name="primary">#FF6B35</color>
-    <color name="primary_dark">#E55A2B</color>
-    <color name="secondary">#4ECDC4</color>
-    <color name="background_dark">#1A1A2E</color>
-    <color name="surface_dark">#16213E</color>
-    <color name="accent">#FFD93D</color>
+    <!-- Hostel Hub Brand Colors (Blue & White Theme) -->
+    <color name="primary">#2563EB</color>
+    <color name="primary_dark">#1E40AF</color>
+    <color name="secondary">#3B82F6</color>
+    <color name="background_dark">#0F172A</color>
+    <color name="surface_dark">#1E293B</color>
+    <color name="accent">#60A5FA</color>
 </resources>
