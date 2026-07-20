@@ -1,0 +1,26 @@
+# Built with Gradle - ignore build outputs
+*.iml
+.gradle
+.gradle_cache
+.gradle_home
+.gradle_local
+gradle_cache
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Android Studio
+*.apk
+*.ap_
+*.aab
+
+# Kotlin
+*.kotlin_metadata
+
+# Generated files
+app/build/
