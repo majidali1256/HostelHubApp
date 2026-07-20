@@ -4,7 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -58,7 +58,7 @@ fun HostelDetailScreen(
     var showWriteReviewModal by remember { mutableStateOf(false) }
     var showReportFraudModal by remember { mutableStateOf(false) }
     var isFavorite by remember { mutableStateOf(false) }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     LaunchedEffect(hostelId) {
         viewModel.loadHostel(hostelId)

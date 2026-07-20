@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.hostelhub.ui.theme.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -324,7 +325,10 @@ private fun DocumentRequirement(title: String, description: String) {
 fun SettingsScreen(
     onNavigateBack: () -> Unit
 ) {
-    var darkMode by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val isDarkPref by ThemePreferenceManager.getThemeModeFlow(context).collectAsState(initial = null)
+    val darkMode = isDarkPref ?: isAppInDarkTheme()
     var notifications by remember { mutableStateOf(true) }
     var emailNotifications by remember { mutableStateOf(true) }
     
@@ -351,9 +355,13 @@ fun SettingsScreen(
                 SettingsToggleItem(
                     icon = Icons.Default.Settings,
                     title = "Dark Mode",
-                    subtitle = "Use dark theme",
+                    subtitle = "Use dark theme across all screens",
                     checked = darkMode,
-                    onCheckedChange = { darkMode = it }
+                    onCheckedChange = { isChecked ->
+                        coroutineScope.launch {
+                            ThemePreferenceManager.setDarkMode(context, isChecked)
+                        }
+                    }
                 )
             }
             

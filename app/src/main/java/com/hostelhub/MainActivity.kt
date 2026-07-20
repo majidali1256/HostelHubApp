@@ -4,15 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.hostelhub.data.repository.AuthRepository
 import com.hostelhub.ui.navigation.HostelHubNavGraph
 import com.hostelhub.ui.theme.HostelHubTheme
+import com.hostelhub.ui.theme.ThemePreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +31,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         setContent {
-            HostelHubTheme {
+            val isDarkPref by ThemePreferenceManager.getThemeModeFlow(this).collectAsState(initial = null)
+            val darkTheme = isDarkPref ?: isSystemInDarkTheme()
+            
+            HostelHubTheme(darkTheme = darkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

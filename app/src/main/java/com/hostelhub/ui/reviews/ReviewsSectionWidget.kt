@@ -2,6 +2,7 @@ package com.hostelhub.ui.reviews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -284,11 +285,14 @@ fun ReviewCardView(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(6.dp))
+                        val isDark = isAppInDarkTheme()
+                        val badgeBg = if (isDark) Color(0xFF064E3B) else Color(0xFFE8F5E9)
+                        val badgeText = if (isDark) Color(0xFFA7F3D0) else Color(0xFF2E7D32)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .background(
-                                    color = Color(0xFFE8F5E9),
+                                    color = badgeBg,
                                     shape = RoundedCornerShape(4.dp)
                                 )
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -296,7 +300,7 @@ fun ReviewCardView(
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = "Verified",
-                                tint = Color(0xFF2E7D32),
+                                tint = badgeText,
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(3.dp))
@@ -304,7 +308,7 @@ fun ReviewCardView(
                                 text = "Verified Student",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = androidx.compose.ui.unit.TextUnit.Unspecified,
-                                color = Color(0xFF2E7D32),
+                                color = badgeText,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }

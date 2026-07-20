@@ -53,7 +53,7 @@ fun HostelHubTopBar(
         label = "menuScale"
     )
 
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val isDark = com.hostelhub.ui.theme.isAppInDarkTheme()
 
     Surface(
         modifier = modifier

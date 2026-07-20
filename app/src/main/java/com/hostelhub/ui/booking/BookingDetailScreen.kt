@@ -1,7 +1,7 @@
 package com.hostelhub.ui.booking
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -31,7 +31,7 @@ fun BookingDetailScreen(
     onCancelBooking: () -> Unit
 ) {
     var showCancelDialog by remember { mutableStateOf(false) }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     // Sample booking data
     val booking = remember {

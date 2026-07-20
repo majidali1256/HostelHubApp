@@ -350,7 +350,7 @@ fun AgreementDetailScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFFF8FAFC))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
                                     .padding(16.dp)
                             ) {
                                 Text(

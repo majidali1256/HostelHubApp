@@ -7,7 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -60,7 +60,7 @@ fun MapSearchScreen(
     val displayHostels = if (uiState.hostels.isNotEmpty()) uiState.hostels else hostels
     var selectedRadius by remember { mutableStateOf(5) }
     var selectedHostel by remember { mutableStateOf<Hostel?>(null) }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
 
     Scaffold(
         topBar = {
@@ -442,7 +442,7 @@ private fun NearbyHostelItem(
     hostel: Hostel,
     onClick: () -> Unit
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     Card(
         onClick = onClick,

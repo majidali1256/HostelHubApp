@@ -5,7 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,7 +53,7 @@ fun AISearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     Scaffold(
         topBar = {
@@ -448,7 +448,7 @@ fun FiltersScreen(
     val categories = listOf("Single", "Double", "Triple", "Dormitory")
     val genderOptions = listOf("Male", "Female", "Any")
     val amenities = listOf("WiFi", "AC", "Parking", "Laundry", "Kitchen", "Security", "Gym", "Meals")
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     Scaffold(
         topBar = {

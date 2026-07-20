@@ -97,7 +97,7 @@ fun HostelHubScaffold(
                     .padding(paddingValues)
             ) {
                 if (title.isNotBlank() && !title.equals("Dashboard", ignoreCase = true)) {
-                    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+                    val isDark = com.hostelhub.ui.theme.isAppInDarkTheme()
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()

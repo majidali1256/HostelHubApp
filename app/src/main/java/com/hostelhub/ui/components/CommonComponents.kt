@@ -5,7 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -566,8 +566,8 @@ fun TripGlideStickyBottomBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = if (isSystemInDarkTheme()) 0.dp else 16.dp,
-        border = if (isSystemInDarkTheme()) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) else null
+        shadowElevation = if (isAppInDarkTheme()) 0.dp else 16.dp,
+        border = if (isAppInDarkTheme()) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) else null
     ) {
         Row(
             modifier = Modifier
@@ -632,10 +632,12 @@ fun TripGlideCardFooterAction(
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "ctaScale"
     )
+    val isDark = isAppInDarkTheme()
+    val bgColor = if (isDark) MaterialTheme.colorScheme.primary else Color(0xFF111827).copy(alpha = 0.85f)
     
     Surface(
         shape = CircleShape,
-        color = Color(0xFF111827).copy(alpha = 0.85f),
+        color = bgColor,
         modifier = modifier
             .fillMaxWidth()
             .height(52.dp)

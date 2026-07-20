@@ -5,7 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -267,7 +267,7 @@ private fun SearchBar(
     onMapClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -452,7 +452,7 @@ fun HostelCard(
     modifier: Modifier = Modifier
 ) {
     var isFavorite by remember { mutableStateOf(false) }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     val cardElevation = if (isDark) 0.dp else 12.dp
 
     Card(

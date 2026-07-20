@@ -5,7 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -132,7 +132,7 @@ private fun ConversationItem(
 
     val totalUnread = conversation.unreadCount?.values?.sum() ?: 0
 
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().shadow(

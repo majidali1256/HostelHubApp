@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hostelhub.ui.navigation.Screen
 import com.hostelhub.ui.theme.*
+import com.hostelhub.ui.theme.isAppInDarkTheme
 
 /**
  * Top-Notch 3D Modern Glassmorphic Navigation Drawer mirroring Web App (Sidebar.tsx)
@@ -487,7 +488,7 @@ private fun DrawerNavItem3D(
     badgeCount: Int = 0,
     onClick: () -> Unit
 ) {
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
 
     val backgroundBrush = if (isSelected) {
         Brush.horizontalGradient(

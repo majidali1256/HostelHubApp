@@ -1,7 +1,7 @@
 package com.hostelhub.ui.profile
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -47,7 +47,7 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
     
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     com.hostelhub.ui.components.navigation.HostelHubScaffold(
         title = "My Profile",
         currentRoute = com.hostelhub.ui.navigation.Screen.Profile.route,
@@ -369,7 +369,7 @@ private fun ProfileMenuItem(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     Card(
         onClick = onClick,
         modifier = Modifier

@@ -2,7 +2,7 @@ package com.hostelhub.ui.booking
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.hostelhub.ui.theme.isAppInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -35,7 +35,7 @@ fun BookingFormScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var isCheckIn by remember { mutableStateOf(true) }
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     LaunchedEffect(hostelId) {
         viewModel.loadHostel(hostelId)
@@ -364,7 +364,7 @@ fun BookingHistoryScreen(
     viewModel: BookingHistoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val isDark = isSystemInDarkTheme()
+    val isDark = isAppInDarkTheme()
     
     LaunchedEffect(Unit) {
         viewModel.loadBookings()
