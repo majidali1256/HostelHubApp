@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -202,7 +203,7 @@ fun IdentityVerificationScreen(
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(100.dp)
-                                        .clip(RoundedCornerShape(12.dp)),
+                                        .clip(RoundedCornerShape(22.dp)),
                                     contentScale = ContentScale.Crop
                                 )
                                 IconButton(
@@ -221,7 +222,7 @@ fun IdentityVerificationScreen(
                 OutlinedButton(
                     onClick = { documentPicker.launch("image/*") },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 ) {
                     Icon(Icons.Default.Add, null)
                     Spacer(Modifier.width(8.dp))
@@ -274,7 +275,7 @@ fun IdentityVerificationScreen(
                             viewModel.submitVerificationDocument(context, selectedDocuments, selectedDocType)
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = CircleShape,
                         enabled = selectedDocuments.isNotEmpty() && !uiState.isSubmitting
                     ) {
                         if (uiState.isSubmitting) {

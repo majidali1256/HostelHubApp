@@ -1,8 +1,10 @@
 package com.hostelhub.ui.booking
 
-import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -11,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.hostelhub.data.model.BookingStatus
@@ -27,6 +31,7 @@ fun BookingDetailScreen(
     onCancelBooking: () -> Unit
 ) {
     var showCancelDialog by remember { mutableStateOf(false) }
+    val isDark = isSystemInDarkTheme()
     
     // Sample booking data
     val booking = remember {
@@ -46,154 +51,227 @@ fun BookingDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Booking Details") },
+                title = { 
+                    Text("Reservation Details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold) 
+                },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                    Surface(
+                        onClick = onNavigateBack,
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 8.dp).size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.ArrowBack, "Back", modifier = Modifier.size(20.dp))
+                        }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            // Status Card
+            // Status Banner Card
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Success.copy(alpha = 0.1f)
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = if (isDark) 0.dp else 6.dp,
+                        shape = RoundedCornerShape(24.dp),
+                        spotColor = Success.copy(alpha = 0.25f)
+                    ),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Success.copy(alpha = if (isDark) 0.18f else 0.1f)),
+                border = BorderStroke(1.dp, Success.copy(alpha = 0.35f))
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(18.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.CheckCircle, null, tint = Success)
-                    Spacer(Modifier.width(12.dp))
+                    Surface(shape = CircleShape, color = Success, modifier = Modifier.size(42.dp)) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.CheckCircle, null, tint = Color.White, modifier = Modifier.size(22.dp))
+                        }
+                    }
+                    Spacer(Modifier.width(14.dp))
                     Column {
-                        Text("Booking Confirmed", fontWeight = FontWeight.SemiBold, color = Success)
-                        Text("Your booking has been confirmed by the owner", style = MaterialTheme.typography.bodySmall)
+                        Text("Reservation Confirmed", fontWeight = FontWeight.ExtraBold, color = Success, style = MaterialTheme.typography.titleMedium)
+                        Text("Your space has been verified and confirmed by the host.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
                     }
                 }
             }
             
-            // Hostel Info
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
+            // Property Info Header Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = if (isDark) 0.dp else 8.dp,
+                        shape = RoundedCornerShape(26.dp),
+                        spotColor = Color.Black.copy(alpha = 0.12f)
+                    ),
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         booking["hostelName"] as String,
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.LocationOn, null, modifier = Modifier.size(16.dp), tint = Primary)
-                        Spacer(Modifier.width(4.dp))
-                        Text(booking["location"] as String, style = MaterialTheme.typography.bodyMedium)
+                        Spacer(Modifier.width(6.dp))
+                        Text(booking["location"] as String, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f))
                     }
                 }
             }
             
-            // Booking Details
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Booking Details", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(12.dp))
+            // Booking Details Summary Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = if (isDark) 0.dp else 8.dp,
+                        shape = RoundedCornerShape(26.dp),
+                        spotColor = Color.Black.copy(alpha = 0.12f)
+                    ),
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Stay Schedule & Room", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
+                    Spacer(Modifier.height(14.dp))
                     
                     DetailRow(icon = Icons.Default.CalendarToday, label = "Check-in", value = booking["checkIn"] as String)
                     DetailRow(icon = Icons.Default.CalendarToday, label = "Check-out", value = booking["checkOut"] as String)
                     DetailRow(icon = Icons.Default.Bed, label = "Room Type", value = booking["roomType"] as String)
                     
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = 14.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Total Amount", fontWeight = FontWeight.SemiBold)
-                        Text(
-                            "Rs ${booking["price"]}",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Primary
-                        )
+                        Text("Total Tariff Paid", fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleMedium)
+                        Surface(shape = CircleShape, color = Primary) {
+                            Text(
+                                "Rs ${booking["price"]}",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = TextOnPrimary,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                            )
+                        }
                     }
                 }
             }
             
-            // Owner Contact
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Property Owner", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(12.dp))
+            // Owner Contact Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = if (isDark) 0.dp else 8.dp,
+                        shape = RoundedCornerShape(26.dp),
+                        spotColor = Color.Black.copy(alpha = 0.12f)
+                    ),
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Property Concierge / Host", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
+                    Spacer(Modifier.height(14.dp))
                     
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            shape = androidx.compose.foundation.shape.CircleShape,
-                            color = Primary.copy(alpha = 0.1f),
-                            modifier = Modifier.size(48.dp)
+                            shape = CircleShape,
+                            color = Primary.copy(alpha = 0.15f),
+                            modifier = Modifier.size(52.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     (booking["ownerName"] as String).first().uppercase(),
                                     color = Primary,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.ExtraBold,
+                                    style = MaterialTheme.typography.titleLarge
                                 )
                             }
                         }
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(Modifier.width(14.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(booking["ownerName"] as String, fontWeight = FontWeight.Medium)
+                            Text(booking["ownerName"] as String, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleMedium)
                             Text(
                                 booking["ownerPhone"] as String,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                             )
                         }
-                        IconButton(onClick = { onNavigateToChat("owner-conversation-id") }) {
-                            Icon(Icons.Default.Chat, null, tint = Primary)
+                        Surface(
+                            onClick = { onNavigateToChat("owner-conversation-id") },
+                            shape = CircleShape,
+                            color = Primary,
+                            shadowElevation = if (isDark) 0.dp else 6.dp,
+                            modifier = Modifier.size(46.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Default.Chat, null, tint = TextOnPrimary, modifier = Modifier.size(20.dp))
+                            }
                         }
                     }
                 }
             }
             
-            // Action Buttons
+            Spacer(Modifier.height(8.dp))
+
+            // Pill Action Buttons
             Button(
                 onClick = onNavigateToAgreements,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Secondary, contentColor = TextOnPrimary),
+                elevation = if (isDark) ButtonDefaults.buttonElevation(0.dp) else ButtonDefaults.buttonElevation(6.dp)
             ) {
-                Icon(Icons.Default.Description, null)
-                Spacer(Modifier.width(8.dp))
-                Text("Digital Tenancy Agreement & E-Sign", fontWeight = FontWeight.SemiBold)
+                Icon(Icons.Default.Description, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Text("Digital Tenancy Agreement & E-Sign", fontWeight = FontWeight.ExtraBold)
             }
 
             Button(
                 onClick = onNavigateToPayment,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape,
+                colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = TextOnPrimary),
+                elevation = if (isDark) ButtonDefaults.buttonElevation(0.dp) else ButtonDefaults.buttonElevation(6.dp)
             ) {
-                Icon(Icons.Default.Payment, null)
-                Spacer(Modifier.width(8.dp))
-                Text("View Payment Details", fontWeight = FontWeight.SemiBold)
+                Icon(Icons.Default.Payment, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Text("View Payment Schedule & Invoice", fontWeight = FontWeight.ExtraBold)
             }
             
             OutlinedButton(
                 onClick = { showCancelDialog = true },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Error)
+                shape = CircleShape,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Error),
+                border = BorderStroke(1.5.dp, Error.copy(alpha = 0.6f))
             ) {
-                Icon(Icons.Default.Cancel, null)
-                Spacer(Modifier.width(8.dp))
-                Text("Cancel Booking")
+                Icon(Icons.Default.Cancel, null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Text("Cancel Reservation", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -202,23 +280,31 @@ fun BookingDetailScreen(
     if (showCancelDialog) {
         AlertDialog(
             onDismissRequest = { showCancelDialog = false },
-            icon = { Icon(Icons.Default.Warning, null, tint = Warning) },
-            title = { Text("Cancel Booking?") },
-            text = { Text("Are you sure you want to cancel this booking? Cancellation fees may apply.") },
+            icon = { 
+                Surface(shape = CircleShape, color = Warning.copy(alpha = 0.15f), modifier = Modifier.size(48.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Warning, null, tint = Warning, modifier = Modifier.size(24.dp))
+                    }
+                }
+            },
+            title = { Text("Cancel Reservation?", fontWeight = FontWeight.ExtraBold) },
+            text = { Text("Are you sure you want to cancel this reservation? Early cancellation policies or deduction charges may apply.", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)) },
+            shape = RoundedCornerShape(26.dp),
             confirmButton = {
                 Button(
                     onClick = {
                         showCancelDialog = false
                         onCancelBooking()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Error)
+                    colors = ButtonDefaults.buttonColors(containerColor = Error, contentColor = Color.White),
+                    shape = CircleShape
                 ) {
-                    Text("Yes, Cancel")
+                    Text("Yes, Cancel", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCancelDialog = false }) {
-                    Text("No, Keep Booking")
+                    Text("No, Keep Reservation", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Medium)
                 }
             }
         )
@@ -234,17 +320,22 @@ private fun DetailRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, modifier = Modifier.size(20.dp), tint = Primary)
-        Spacer(Modifier.width(12.dp))
+        Surface(shape = CircleShape, color = Primary.copy(alpha = 0.12f), modifier = Modifier.size(34.dp)) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, null, modifier = Modifier.size(16.dp), tint = Primary)
+            }
+        }
+        Spacer(Modifier.width(14.dp))
         Text(
             label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            modifier = Modifier.width(80.dp)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+            modifier = Modifier.width(95.dp),
+            fontWeight = FontWeight.Medium
         )
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.ExtraBold)
     }
 }

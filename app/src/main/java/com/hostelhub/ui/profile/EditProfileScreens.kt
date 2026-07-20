@@ -2,6 +2,7 @@ package com.hostelhub.ui.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -83,7 +84,7 @@ fun EditProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Username") },
                     leadingIcon = { Icon(Icons.Default.Person, null) },
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 )
                 
                 // First Name
@@ -92,7 +93,7 @@ fun EditProfileScreen(
                     onValueChange = viewModel::updateFirstName,
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("First Name") },
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 )
                 
                 // Last Name
@@ -101,7 +102,7 @@ fun EditProfileScreen(
                     onValueChange = viewModel::updateLastName,
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Last Name") },
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 )
                 
                 // Email (read-only)
@@ -112,7 +113,7 @@ fun EditProfileScreen(
                     label = { Text("Email") },
                     leadingIcon = { Icon(Icons.Default.Email, null) },
                     enabled = false,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 )
                 
                 // Contact Number
@@ -123,7 +124,7 @@ fun EditProfileScreen(
                     label = { Text("Phone Number") },
                     leadingIcon = { Icon(Icons.Default.Phone, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 )
                 
                 // Error
@@ -154,7 +155,7 @@ fun EditProfileScreen(
                 Button(
                     onClick = { viewModel.saveProfile(onSaveSuccess) },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = CircleShape,
                     enabled = !uiState.isLoading
                 ) {
                     if (uiState.isLoading) {
@@ -297,7 +298,7 @@ fun BankDetailsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Bank Name") },
                 leadingIcon = { Icon(Icons.Default.AccountBalance, null) },
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             OutlinedTextField(
@@ -306,7 +307,7 @@ fun BankDetailsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Account Title") },
                 leadingIcon = { Icon(Icons.Default.Person, null) },
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             OutlinedTextField(
@@ -316,7 +317,7 @@ fun BankDetailsScreen(
                 label = { Text("Account Number") },
                 leadingIcon = { Icon(Icons.Default.Numbers, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             OutlinedTextField(
@@ -324,7 +325,7 @@ fun BankDetailsScreen(
                 onValueChange = viewModel::updateIban,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("IBAN (Optional)") },
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -342,7 +343,7 @@ fun BankDetailsScreen(
                 label = { Text("JazzCash Number") },
                 leadingIcon = { Icon(Icons.Default.PhoneAndroid, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             OutlinedTextField(
@@ -352,7 +353,7 @@ fun BankDetailsScreen(
                 label = { Text("EasyPaisa Number") },
                 leadingIcon = { Icon(Icons.Default.PhoneAndroid, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                shape = RoundedCornerShape(12.dp)
+                shape = CircleShape
             )
             
             // Error/Success
@@ -381,7 +382,7 @@ fun BankDetailsScreen(
             Button(
                 onClick = viewModel::saveBankDetails,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = CircleShape,
                 enabled = !uiState.isLoading
             ) {
                 if (uiState.isLoading) {

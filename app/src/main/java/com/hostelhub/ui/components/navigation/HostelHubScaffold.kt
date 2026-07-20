@@ -97,29 +97,30 @@ fun HostelHubScaffold(
                     .padding(paddingValues)
             ) {
                 if (title.isNotBlank() && !title.equals("Dashboard", ignoreCase = true)) {
+                    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                             .shadow(
-                                elevation = 6.dp,
-                                shape = RoundedCornerShape(14.dp),
+                                elevation = if (isDark) 0.dp else 6.dp,
+                                shape = androidx.compose.foundation.shape.CircleShape,
                                 spotColor = Primary.copy(alpha = 0.25f)
                             ),
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = androidx.compose.foundation.shape.CircleShape,
                         border = BorderStroke(1.dp, Primary.copy(alpha = 0.15f))
                     ) {
                         Row(
                             modifier = Modifier
-                                .padding(horizontal = 14.dp, vertical = 10.dp)
+                                .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
                                     .background(Primary.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -130,7 +131,7 @@ fun HostelHubScaffold(
                                     fontSize = 16.sp
                                 )
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = title,
                                 style = MaterialTheme.typography.titleMedium,

@@ -1,12 +1,13 @@
 package com.hostelhub.ui.components.navigation
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -17,15 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hostelhub.ui.navigation.Screen
 import com.hostelhub.ui.theme.Primary
-import com.hostelhub.ui.theme.Secondary
+import com.hostelhub.ui.theme.TextOnPrimary
 
 data class BottomNavItem(
     val label: String,
@@ -35,8 +33,7 @@ data class BottomNavItem(
 )
 
 /**
- * Modern Floating 3D Glassmorphic Bottom Navigation Bar with Spring Physics & Glow Effects
- * Aligned with ui-ux-pro-max guidelines.
+ * Modern TripGlide Floating Pill-Shaped Bottom Navigation Bar (Icon-Only with Circular Active Background)
  */
 @Composable
 fun HostelHubBottomBar(
@@ -53,26 +50,27 @@ fun HostelHubBottomBar(
         )
     }
 
+    val isDark = isSystemInDarkTheme()
+    val barBgColor = if (isDark) MaterialTheme.colorScheme.surface else Color(0xFF111827)
+    val inactiveIconColor = if (isDark) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f) else Color.White.copy(alpha = 0.65f)
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 28.dp, vertical = 14.dp)
             .shadow(
-                elevation = 20.dp,
-                shape = RoundedCornerShape(28.dp),
-                spotColor = Primary.copy(alpha = 0.25f)
+                elevation = if (isDark) 0.dp else 24.dp,
+                shape = CircleShape,
+                spotColor = Color.Black.copy(alpha = 0.35f)
             ),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
-        shape = RoundedCornerShape(28.dp),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-        )
+        color = barBgColor,
+        shape = CircleShape,
+        border = if (isDark) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)) else null
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = 14.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -88,62 +86,35 @@ fun HostelHubBottomBar(
                     label = "itemScale"
                 )
 
+                val activeBgColor by animateColorAsState(
+                    targetValue = if (isSelected) (if (isDark) Primary else Color.White) else Color.Transparent,
+                    label = "activeBg"
+                )
+
+                val iconColor by animateColorAsState(
+                    targetValue = if (isSelected) (if (isDark) TextOnPrimary else Color(0xFF111827)) else inactiveIconColor,
+                    label = "iconColor"
+                )
+
                 Box(
                     modifier = Modifier
                         .scale(scale)
-                        .clip(RoundedCornerShape(20.dp))
+                        .size(46.dp)
+                        .clip(CircleShape)
+                        .background(activeBgColor)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             onClick = { if (!isSelected) onNavigate(item.route) }
-                        )
-                        .padding(horizontal = 14.dp, vertical = 6.dp),
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            if (isSelected) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape)
-                                        .background(Primary.copy(alpha = 0.15f))
-                                )
-                            }
-                            Icon(
-                                imageVector = if (isSelected) item.selectedIcon else item.icon,
-                                contentDescription = item.label,
-                                tint = if (isSelected) Primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        Text(
-                            text = item.label,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 11.sp,
-                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium
-                            ),
-                            color = if (isSelected) Primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-
-                        if (isSelected) {
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 16.dp, height = 3.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        Brush.horizontalGradient(listOf(Primary, Secondary))
-                                    )
-                            )
-                        }
-                    }
+                    Icon(
+                        imageVector = if (isSelected) item.selectedIcon else item.icon,
+                        contentDescription = item.label,
+                        tint = iconColor,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
         }

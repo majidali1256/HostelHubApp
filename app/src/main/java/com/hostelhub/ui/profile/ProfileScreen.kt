@@ -1,5 +1,7 @@
 package com.hostelhub.ui.profile
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +47,7 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
     
+    val isDark = isSystemInDarkTheme()
     com.hostelhub.ui.components.navigation.HostelHubScaffold(
         title = "My Profile",
         currentRoute = com.hostelhub.ui.navigation.Screen.Profile.route,
@@ -79,9 +84,11 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Primary.copy(alpha = 0.1f))
+                        .padding(16.dp)
+                        .shadow(if (isDark) 0.dp else 8.dp, RoundedCornerShape(26.dp), spotColor = Color.Black.copy(alpha = 0.12f)),
+                    shape = RoundedCornerShape(26.dp),
+                    colors = CardDefaults.cardColors(containerColor = Primary.copy(alpha = if (isDark) 0.16f else 0.1f)),
+                    border = BorderStroke(1.dp, Primary.copy(alpha = 0.3f))
                 ) {
                     Column(
                         modifier = Modifier
@@ -119,7 +126,7 @@ fun ProfileScreen(
                         // Role Badge
                         uiState.user?.role?.let { role ->
                             Surface(
-                                shape = RoundedCornerShape(20.dp),
+                                shape = CircleShape,
                                 color = when (role.name.lowercase()) {
                                     "owner" -> Secondary.copy(alpha = 0.2f)
                                     "admin" -> Primary.copy(alpha = 0.2f)
@@ -162,7 +169,8 @@ fun ProfileScreen(
                         // Edit Profile Button
                         OutlinedButton(
                             onClick = onNavigateToEditProfile,
-                            shape = RoundedCornerShape(12.dp)
+                            shape = CircleShape,
+                            border = BorderStroke(1.5.dp, Primary)
                         ) {
                             Icon(Icons.Default.Edit, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(8.dp))
@@ -312,9 +320,9 @@ fun ProfileScreen(
                     // Logout Button
                     Button(
                         onClick = { showLogoutDialog = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(54.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Error),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = CircleShape
                     ) {
                         Icon(Icons.Default.Logout, null)
                         Spacer(Modifier.width(8.dp))
@@ -331,8 +339,9 @@ fun ProfileScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Logout") },
-            text = { Text("Are you sure you want to logout?") },
+            shape = RoundedCornerShape(26.dp),
+            title = { Text("Logout", fontWeight = FontWeight.ExtraBold) },
+            text = { Text("Are you sure you want to logout from your account?") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -360,32 +369,53 @@ private fun ProfileMenuItem(
     subtitle: String,
     onClick: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .padding(vertical = 5.dp)
+            .shadow(if (isDark) 0.dp else 4.dp, RoundedCornerShape(22.dp), spotColor = Color.Black.copy(alpha = 0.08f)),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, null, tint = Primary)
+            Surface(
+                shape = CircleShape,
+                color = Primary.copy(alpha = 0.12f),
+                modifier = Modifier.size(44.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icon, null, tint = Primary, modifier = Modifier.size(22.dp))
+                }
+            }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                 )
             }
-            Icon(
-                Icons.Default.ChevronRight,
-                null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            )
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(32.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }

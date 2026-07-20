@@ -1,16 +1,17 @@
 package com.hostelhub.ui.home
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -19,12 +20,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,7 +34,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hostelhub.data.model.Hostel
 import com.hostelhub.data.model.RoomCategory
-import com.hostelhub.ui.components.NotificationBadgeWidget
+import com.hostelhub.ui.components.*
 import com.hostelhub.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,9 +93,9 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 16.dp)
+            contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            // Search Bar & Actions
+            // Search Bar & Actions (TripGlide Pill Style)
             item {
                 SearchBar(
                     query = uiState.searchQuery,
@@ -101,7 +103,7 @@ fun HomeScreen(
                     onAiSearchClick = onNavigateToSearch,
                     onFilterClick = onNavigateToFilters,
                     onMapClick = onNavigateToMap,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp)
                 )
             }
 
@@ -111,16 +113,17 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                            .padding(horizontal = 20.dp, vertical = 4.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
                             color = Secondary.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = CircleShape,
+                            border = BorderStroke(1.dp, Secondary.copy(alpha = 0.3f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(Icons.Default.FilterAlt, null, tint = Secondary, modifier = Modifier.size(16.dp))
@@ -137,39 +140,38 @@ fun HomeScreen(
                             onClearFilters()
                             viewModel.clearFilters()
                         }) {
-                            Text("Clear", style = MaterialTheme.typography.labelMedium)
+                            Text("Clear", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
                         }
                     }
                 }
             }
             
-            // Sector Chips
+            // Sector Chips (TripGlide Horizontally Scrollable Pill Row)
             item {
                 Text(
                     "Explore Sectors",
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                 )
                 SectorFilter(
                     selectedSector = uiState.selectedSector,
                     onSectorSelected = { sector ->
                         viewModel.filterBySector(sector)
                     },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(bottom = 14.dp)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
             
-            // Room Category Filter
+            // Room Category Filter (TripGlide Horizontally Scrollable Pill Row)
             item {
                 Text(
                     "Room Categories",
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                 )
                 CategoryFilter(
                     selectedCategory = selectedCategory,
@@ -181,21 +183,22 @@ fun HomeScreen(
                             viewModel.clearFilters()
                         }
                     },
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(bottom = 18.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
             }
             
-            // Loading State
+            // Loading State (~24px skeletons)
             if (uiState.isLoading) {
                 item {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
+                            .padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        CircularProgressIndicator()
+                        repeat(2) {
+                            HostelCardSkeleton()
+                        }
                     }
                 }
             }
@@ -206,19 +209,19 @@ fun HomeScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Error.copy(alpha = 0.1f))
+                            .padding(20.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = Error.copy(alpha = 0.12f))
                     ) {
                         Row(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(18.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(Icons.Default.Error, null, tint = Error)
                             Spacer(Modifier.width(12.dp))
-                            Text(error, color = Error)
-                            Spacer(Modifier.weight(1f))
+                            Text(error, color = Error, modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium)
                             TextButton(onClick = viewModel::loadHostels) {
-                                Text("Retry")
+                                Text("Retry", fontWeight = FontWeight.Bold, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
                             }
                         }
                     }
@@ -228,34 +231,27 @@ fun HomeScreen(
             // Empty State
             if (!uiState.isLoading && uiState.filteredHostels.isEmpty() && uiState.error == null) {
                 item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            Icons.Default.SearchOff,
-                            null,
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            "No hostels found",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    EmptyState(
+                        icon = Icons.Default.SearchOff,
+                        title = "No hostels found",
+                        subtitle = "Try adjusting your filters or sector criteria to see more available spaces.",
+                        actionLabel = "Clear Filters",
+                        onAction = {
+                            selectedCategory = null
+                            onClearFilters()
+                            viewModel.clearFilters()
+                        },
+                        modifier = Modifier.padding(top = 24.dp)
+                    )
                 }
             }
             
-            // Hostel List
-            items(uiState.filteredHostels) { hostel ->
+            // Hostel List (~26px cards with photo header overlay buttons & nested CTA)
+            items(uiState.filteredHostels, key = { it.id }) { hostel ->
                 HostelCard(
                     hostel = hostel,
                     onClick = { onNavigateToHostel(hostel.id) },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                 )
             }
         }
@@ -271,17 +267,19 @@ private fun SearchBar(
     onMapClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val isDark = isSystemInDarkTheme()
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         OutlinedTextField(
             value = query,
             onValueChange = onQueryChange,
             modifier = Modifier.weight(1f),
-            placeholder = { Text("Search hostels or ask AI...") },
-            leadingIcon = { Icon(Icons.Default.Search, null) },
+            placeholder = { Text("Search hostels or ask AI...", style = MaterialTheme.typography.bodyMedium) },
+            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)) },
             trailingIcon = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (query.isNotEmpty()) {
@@ -291,7 +289,10 @@ private fun SearchBar(
                     }
                     IconButton(
                         onClick = onAiSearchClick,
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(Secondary.copy(alpha = 0.12f))
                     ) {
                         Icon(
                             Icons.Default.AutoAwesome,
@@ -303,35 +304,41 @@ private fun SearchBar(
                 }
             },
             singleLine = true,
-            shape = RoundedCornerShape(16.dp),
+            shape = CircleShape, // Fully pill-shaped search bar
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                focusedBorderColor = Primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedContainerColor = MaterialTheme.colorScheme.surface
             )
         )
+        
         Surface(
             onClick = onFilterClick,
-            shape = RoundedCornerShape(16.dp),
-            color = Primary.copy(alpha = 0.1f),
-            modifier = Modifier.size(48.dp)
+            shape = CircleShape,
+            color = Primary.copy(alpha = if (isDark) 0.2f else 0.12f),
+            border = BorderStroke(1.dp, Primary.copy(alpha = 0.3f)),
+            modifier = Modifier.size(52.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Tune, "Filters", tint = Primary)
+                Icon(Icons.Default.Tune, "Filters", tint = Primary, modifier = Modifier.size(22.dp))
             }
         }
+        
         Surface(
             onClick = onMapClick,
-            shape = RoundedCornerShape(16.dp),
-            color = Secondary.copy(alpha = 0.1f),
-            modifier = Modifier.size(48.dp)
+            shape = CircleShape,
+            color = Secondary.copy(alpha = if (isDark) 0.2f else 0.12f),
+            border = BorderStroke(1.dp, Secondary.copy(alpha = 0.3f)),
+            modifier = Modifier.size(52.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Map, "Map View", tint = Secondary)
+                Icon(Icons.Default.Map, "Map View", tint = Secondary, modifier = Modifier.size(22.dp))
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SectorFilter(
     selectedSector: String?,
@@ -340,23 +347,50 @@ private fun SectorFilter(
 ) {
     val sectors = listOf("All", "Near NUST", "G-11 Sector", "H-12 Sector", "Johar Town", "DHA", "Gulberg")
     LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp)
     ) {
         items(sectors) { sector ->
-            FilterChip(
-                selected = (selectedSector == sector || (selectedSector == null && sector == "All")),
-                onClick = { onSectorSelected(sector) },
-                label = { Text(sector) },
-                leadingIcon = if (selectedSector == sector || (selectedSector == null && sector == "All")) {
-                    { Icon(Icons.Default.Place, null, Modifier.size(16.dp)) }
-                } else null
+            val isSelected = (selectedSector == sector || (selectedSector == null && sector == "All"))
+            val bgColor by animateColorAsState(
+                targetValue = if (isSelected) Primary else MaterialTheme.colorScheme.surface,
+                label = "sectorBg"
             )
+            val textColor by animateColorAsState(
+                targetValue = if (isSelected) TextOnPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                label = "sectorText"
+            )
+
+            Surface(
+                shape = CircleShape,
+                color = bgColor,
+                border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)) else null,
+                modifier = Modifier
+                    .height(40.dp)
+                    .clickable { onSectorSelected(sector) }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    if (isSelected) {
+                        Icon(Icons.Default.Place, null, tint = TextOnPrimary, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(6.dp))
+                    }
+                    Text(
+                        text = sector,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = textColor,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CategoryFilter(
     selectedCategory: String?,
@@ -364,41 +398,82 @@ private fun CategoryFilter(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp)
     ) {
         items(RoomCategory.all) { category ->
-            FilterChip(
-                selected = selectedCategory == category,
-                onClick = { onCategorySelected(category) },
-                label = { Text(category) },
-                leadingIcon = if (selectedCategory == category) {
-                    { Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }
-                } else null
+            val isSelected = selectedCategory == category
+            val bgColor by animateColorAsState(
+                targetValue = if (isSelected) Primary else MaterialTheme.colorScheme.surface,
+                label = "catBg"
             )
+            val textColor by animateColorAsState(
+                targetValue = if (isSelected) TextOnPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                label = "catText"
+            )
+
+            Surface(
+                shape = CircleShape,
+                color = bgColor,
+                border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)) else null,
+                modifier = Modifier
+                    .height(40.dp)
+                    .clickable { onCategorySelected(category) }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    if (isSelected) {
+                        Icon(Icons.Default.Check, null, tint = TextOnPrimary, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(6.dp))
+                    }
+                    Text(
+                        text = category,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = textColor,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            }
         }
     }
 }
 
+/**
+ * TripGlide Restyled HostelCard: ~26px rounded shape, overlay buttons on photo, rating pill + underlined link, nested footer CTA
+ */
 @Composable
 fun HostelCard(
     hostel: Hostel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isFavorite by remember { mutableStateOf(false) }
+    val isDark = isSystemInDarkTheme()
+    val cardElevation = if (isDark) 0.dp else 12.dp
+
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = cardElevation,
+                shape = RoundedCornerShape(26.dp),
+                spotColor = Color.Black.copy(alpha = 0.15f)
+            )
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(26.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = if (isDark) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)) else null
     ) {
         Column {
-            // Image
+            // Photo Header (~220dp with circular overlay buttons)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(220.dp)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -410,188 +485,195 @@ fun HostelCard(
                     contentScale = ContentScale.Crop
                 )
                 
-                // Gradient Overlay
+                // Dark Gradient Overlay for bottom title contrast
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f)),
-                                startY = 100f
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                                startY = 110f
                             )
                         )
                 )
-                
-                // Price Badge & Fair Rent Indicator
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(12.dp),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Primary
-                    ) {
-                        Text(
-                            text = "Rs ${hostel.price.toInt()}/mo",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = TextOnPrimary,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    if (hostel.price <= 38000) {
-                        Spacer(Modifier.height(4.dp))
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = Success.copy(alpha = 0.9f)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Default.ThumbUp, null, tint = Color.White, modifier = Modifier.size(10.dp))
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    "Fair Price",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
-                    }
-                }
-                
-                // Verified Badge
+
+                // Top Left: Verified Badge
                 if (hostel.verified) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .padding(12.dp),
-                        shape = RoundedCornerShape(8.dp),
+                            .padding(14.dp),
+                        shape = CircleShape,
                         color = Success
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 Icons.Default.Verified,
                                 null,
                                 modifier = Modifier.size(14.dp),
-                                tint = TextOnPrimary
+                                tint = Color.White
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
                                 "Verified",
-                                color = TextOnPrimary,
-                                style = MaterialTheme.typography.labelSmall
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
+
+                // Top Right: Circular Overlay Favorite Button over photo (TripGlide pattern)
+                TripGlideOverlayIconButton(
+                    icon = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    onClick = { isFavorite = !isFavorite },
+                    isFavorite = isFavorite,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(14.dp)
+                )
                 
-                // Title at bottom of image
-                Column(
+                // Bottom of Image: Price Pill Badge + Title & Location
+                Row(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(12.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Text(
-                        text = hostel.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            null,
-                            modifier = Modifier.size(14.dp),
-                            tint = Color.White.copy(alpha = 0.8f)
-                        )
-                        Spacer(Modifier.width(4.dp))
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = hostel.location,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.8f),
+                            text = hostel.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+                        Spacer(Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                null,
+                                modifier = Modifier.size(15.dp),
+                                tint = Color.White.copy(alpha = 0.85f)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text(
+                                text = hostel.location,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.85f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    Column(horizontalAlignment = Alignment.End) {
+                        Surface(
+                            shape = CircleShape,
+                            color = Primary
+                        ) {
+                            Text(
+                                text = "Rs ${hostel.price.toInt()}/mo",
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                color = TextOnPrimary,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
+                        if (hostel.price <= 38000) {
+                            Spacer(Modifier.height(4.dp))
+                            Surface(
+                                shape = CircleShape,
+                                color = Success.copy(alpha = 0.95f)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Default.ThumbUp, null, tint = Color.White, modifier = Modifier.size(10.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text(
+                                        "Fair Price",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
             
-            // Details
+            // Details & Amenities Row
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
-                // Rating and Category
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Rating
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.Star,
-                            null,
-                            modifier = Modifier.size(18.dp),
-                            tint = Accent
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = String.format("%.1f", hostel.rating),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = " (${hostel.reviews?.size ?: 0})",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    // Star Rating inside bordered pill + Underlined Review Count (TripGlide pattern)
+                    TripGlideRatingPill(
+                        rating = hostel.rating,
+                        reviewCount = hostel.reviews?.size ?: 0
+                    )
                     
-                    // Category
+                    // Category Tag
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = Secondary.copy(alpha = 0.1f)
+                        shape = CircleShape,
+                        color = Secondary.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, Secondary.copy(alpha = 0.25f))
                     ) {
                         Text(
                             text = hostel.category,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Secondary
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Secondary,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
                 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(14.dp))
                 
-                // Amenities Preview
+                // Amenities Row
                 if (hostel.amenities.isNotEmpty()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         hostel.amenities.take(4).forEach { amenity ->
                             AmenityChip(amenity = amenity)
                         }
                         if (hostel.amenities.size > 4) {
                             Text(
-                                text = "+${hostel.amenities.size - 4}",
+                                text = "+${hostel.amenities.size - 4} more",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.align(Alignment.CenterVertically)
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                                modifier = Modifier.padding(start = 4.dp)
                             )
                         }
                     }
                 }
+
+                Spacer(Modifier.height(16.dp))
+
+                // Nested CTA right inside the card footer (TripGlide rule: "Cards nest their own call-to-action inside the card")
+                TripGlideCardFooterAction(
+                    text = "View property & rooms",
+                    onClick = onClick
+                )
             }
         }
     }
@@ -613,15 +695,26 @@ private fun AmenityChip(amenity: String) {
     
     Surface(
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceVariant
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
     ) {
-        Icon(
-            icon,
-            amenity,
-            modifier = Modifier
-                .padding(6.dp)
-                .size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                icon,
+                amenity,
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = amenity,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }

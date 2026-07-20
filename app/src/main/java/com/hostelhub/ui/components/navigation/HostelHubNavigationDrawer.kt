@@ -451,12 +451,12 @@ fun HostelHubNavigationDrawer(
 private fun SectionHeaderPill(title: String, icon: ImageVector) {
     Surface(
         color = Primary.copy(alpha = 0.08f),
-        shape = RoundedCornerShape(8.dp),
+        shape = CircleShape,
         border = BorderStroke(0.5.dp, Primary.copy(alpha = 0.25f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -487,9 +487,11 @@ private fun DrawerNavItem3D(
     badgeCount: Int = 0,
     onClick: () -> Unit
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+
     val backgroundBrush = if (isSelected) {
         Brush.horizontalGradient(
-            listOf(Primary.copy(alpha = 0.25f), Primary.copy(alpha = 0.06f))
+            listOf(Primary.copy(alpha = if (isDark) 0.35f else 0.25f), Primary.copy(alpha = if (isDark) 0.12f else 0.06f))
         )
     } else {
         Brush.horizontalGradient(
@@ -503,19 +505,19 @@ private fun DrawerNavItem3D(
     )
 
     val elevation by animateDpAsState(
-        targetValue = if (isSelected) 6.dp else 0.dp,
+        targetValue = if (isSelected && !isDark) 6.dp else 0.dp,
         label = "elevation"
     )
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation, RoundedCornerShape(14.dp), spotColor = Primary.copy(alpha = 0.3f))
-            .clip(RoundedCornerShape(14.dp))
+            .shadow(elevation, CircleShape, spotColor = Primary.copy(alpha = 0.3f))
+            .clip(CircleShape)
             .clickable(onClick = onClick),
         color = Color.Transparent,
-        shape = RoundedCornerShape(14.dp),
-        border = if (isSelected) BorderStroke(1.dp, Primary.copy(alpha = 0.25f)) else null
+        shape = CircleShape,
+        border = if (isSelected) BorderStroke(1.dp, Primary.copy(alpha = 0.3f)) else null
     ) {
         Box(
             modifier = Modifier
@@ -529,7 +531,7 @@ private fun DrawerNavItem3D(
                         .align(Alignment.CenterStart)
                         .width(4.dp)
                         .height(26.dp)
-                        .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
+                        .clip(CircleShape)
                         .background(Primary)
                 )
             }
@@ -546,8 +548,8 @@ private fun DrawerNavItem3D(
                     Surface(
                         modifier = Modifier
                             .size(38.dp)
-                            .shadow(if (isSelected) 6.dp else 0.dp, RoundedCornerShape(10.dp), spotColor = Primary.copy(alpha = 0.4f)),
-                        shape = RoundedCornerShape(10.dp),
+                            .shadow(if (isSelected && !isDark) 6.dp else 0.dp, CircleShape, spotColor = Primary.copy(alpha = 0.4f)),
+                        shape = CircleShape,
                         color = if (isSelected) Primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
@@ -576,7 +578,7 @@ private fun DrawerNavItem3D(
                         color = Color(0xFFEF4444),
                         shape = CircleShape,
                         modifier = Modifier
-                            .shadow(4.dp, CircleShape, spotColor = Color(0xFFEF4444).copy(alpha = 0.4f))
+                            .shadow(if (isDark) 0.dp else 4.dp, CircleShape, spotColor = Color(0xFFEF4444).copy(alpha = 0.4f))
                             .sizeIn(minWidth = 22.dp, minHeight = 22.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 6.dp)) {

@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +19,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -128,16 +132,19 @@ private fun ConversationItem(
 
     val totalUnread = conversation.unreadCount?.values?.sum() ?: 0
 
+    val isDark = isSystemInDarkTheme()
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (totalUnread > 0) Primary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface
+        modifier = Modifier.fillMaxWidth().shadow(
+            elevation = if (isDark) 0.dp else if (totalUnread > 0) 6.dp else 3.dp,
+            shape = RoundedCornerShape(26.dp),
+            spotColor = if (totalUnread > 0) Primary.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.08f)
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (totalUnread > 0) 3.dp else 1.dp
-        )
+        shape = RoundedCornerShape(26.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (totalUnread > 0) Primary.copy(alpha = if (isDark) 0.16f else 0.08f) else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, if (totalUnread > 0) Primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -313,14 +320,14 @@ fun ChatRoomScreen(
                         },
                         modifier = Modifier.weight(1f),
                         placeholder = { Text("Type a message...") },
-                        shape = RoundedCornerShape(24.dp),
+                        shape = CircleShape,
                         maxLines = 4,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
                         )
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(10.dp))
                     FilledIconButton(
                         onClick = { 
                             if (messageText.isNotBlank()) {
@@ -329,6 +336,7 @@ fun ChatRoomScreen(
                             }
                         },
                         enabled = messageText.isNotBlank(),
+                        shape = CircleShape,
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = Primary,
                             contentColor = TextOnPrimary
@@ -409,10 +417,10 @@ private fun MessageBubble(
     ) {
         Card(
             shape = RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp,
-                bottomStart = if (isMe) 16.dp else 4.dp,
-                bottomEnd = if (isMe) 4.dp else 16.dp
+                topStart = 22.dp,
+                topEnd = 22.dp,
+                bottomStart = if (isMe) 22.dp else 6.dp,
+                bottomEnd = if (isMe) 6.dp else 22.dp
             ),
             colors = CardDefaults.cardColors(
                 containerColor = if (isMe) Primary else MaterialTheme.colorScheme.surfaceVariant

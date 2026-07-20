@@ -53,19 +53,21 @@ fun HostelHubTopBar(
         label = "menuScale"
     )
 
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 14.dp,
-                shape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp),
+                elevation = if (isDark) 0.dp else 14.dp,
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
                 spotColor = Primary.copy(alpha = 0.2f)
             ),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.97f),
-        shape = RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp),
+        shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+            MaterialTheme.colorScheme.onSurface.copy(alpha = if (isDark) 0.15f else 0.08f)
         )
     ) {
         Box(

@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -99,7 +100,7 @@ fun PaymentInstructionsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Primary),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(26.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
@@ -256,7 +257,7 @@ fun PaymentInstructionsScreen(
                     Button(
                         onClick = onPaymentUploaded,
                         modifier = Modifier.fillMaxWidth().height(54.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = CircleShape
                     ) {
                         Text("Back to Booking Details", fontWeight = FontWeight.SemiBold)
                     }
@@ -268,7 +269,7 @@ fun PaymentInstructionsScreen(
                         label = { Text("Transaction ID (TID / Ref #)") },
                         placeholder = { Text("e.g. TRX987654321") },
                         leadingIcon = { Icon(Icons.Default.Receipt, null) },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = CircleShape
                     )
                     
                     Spacer(Modifier.height(12.dp))
@@ -277,7 +278,7 @@ fun PaymentInstructionsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { imagePickerLauncher.launch("image/*") },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(22.dp),
                         colors = CardDefaults.outlinedCardColors(
                             containerColor = if (uiState.selectedImageUri != null) Primary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface
                         )
@@ -327,7 +328,7 @@ fun PaymentInstructionsScreen(
                     Button(
                         onClick = { viewModel.uploadReceipt(bookingId, onPaymentUploaded) },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = CircleShape,
                         enabled = !uiState.isSubmitting && uiState.transactionId.isNotBlank() && uiState.selectedImageUri != null
                     ) {
                         if (uiState.isSubmitting) {
@@ -357,7 +358,7 @@ private fun PaymentMethodCard(
     
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
