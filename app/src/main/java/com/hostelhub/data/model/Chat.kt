@@ -1,6 +1,31 @@
 package com.hostelhub.data.model
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import java.lang.reflect.Type
+
+class FlexibleStringDeserializer : JsonDeserializer<String> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): String {
+        if (json == null || json.isJsonNull) return ""
+        if (json.isJsonPrimitive) return json.asString
+        if (json.isJsonObject) {
+            val obj = json.asJsonObject
+            return when {
+                obj.has("_id") && !obj.get("_id").isJsonNull -> obj.get("_id").asString
+                obj.has("id") && !obj.get("id").isJsonNull -> obj.get("id").asString
+                else -> ""
+            }
+        }
+        return ""
+    }
+}
 
 /**
  * Chat conversation
@@ -36,8 +61,17 @@ data class ParticipantInfo(
 
 data class LastMessage(
     val content: String = "",
+    @JsonAdapter(FlexibleStringDeserializer::class)
     val senderId: String = "",
     val timestamp: String = ""
+)
+
+/**
+ * Paginated chat messages response
+ */
+data class MessagesResponse(
+    val messages: List<Message> = emptyList(),
+    val hasMore: Boolean = false
 )
 
 /**
@@ -46,7 +80,9 @@ data class LastMessage(
 data class Message(
     @SerializedName(value = "id", alternate = ["_id"])
     val id: String = "",
+    @JsonAdapter(FlexibleStringDeserializer::class)
     val conversationId: String = "",
+    @JsonAdapter(FlexibleStringDeserializer::class)
     val senderId: String = "",
     val content: String = "",
     val type: MessageType = MessageType.TEXT,

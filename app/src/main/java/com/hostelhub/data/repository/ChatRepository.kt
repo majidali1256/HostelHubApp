@@ -146,7 +146,7 @@ class ChatRepository @Inject constructor(
         return try {
             val response = chatApi.getMessages(conversationId, limit, before)
             if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
+                Result.success(response.body()!!.messages)
             } else {
                 Result.failure(Exception("Failed to fetch messages"))
             }

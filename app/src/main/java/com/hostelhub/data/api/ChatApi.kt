@@ -27,7 +27,7 @@ interface ChatApi {
         @Path("id") conversationId: String,
         @Query("limit") limit: Int = 50,
         @Query("before") before: String? = null
-    ): Response<List<Message>>
+    ): Response<MessagesResponse>
 
     @POST("messages")
     suspend fun sendMessage(@Body request: SendMessageRequest): Response<Message>

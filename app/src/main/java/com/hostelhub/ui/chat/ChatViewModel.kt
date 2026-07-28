@@ -199,7 +199,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(content: String) {
-        val activeId = activeConversationId ?: return
+        val activeId = activeConversationId
+        if (activeId == null) {
+            _roomUiState.update { it.copy(error = "Cannot send message: Active conversation not initialized") }
+            return
+        }
         if (content.isBlank()) return
 
         // Stop typing indicator before sending
@@ -220,7 +224,7 @@ class ChatViewModel @Inject constructor(
                 createdAt = com.hostelhub.utils.DateUtils.getCurrentTimestamp()
             )
             _roomUiState.update { state ->
-                state.copy(messages = state.messages + tempMessage)
+                state.copy(messages = state.messages + tempMessage, error = null)
             }
 
             // Send via REST (which triggers backend to save and emit message:new via socket)
@@ -235,8 +239,14 @@ class ChatViewModel @Inject constructor(
                     }
                 }
             } else {
-                // If failed, we keep the message or mark error
-                Log.e("ChatViewModel", "Failed to send message: ${result.exceptionOrNull()?.message}")
+                val errorMsg = result.exceptionOrNull()?.message ?: "Failed to send message"
+                Log.e("ChatViewModel", "Failed to send message: $errorMsg")
+                _roomUiState.update { state ->
+                    state.copy(
+                        messages = state.messages.filter { it.id != tempMessage.id },
+                        error = errorMsg
+                    )
+                }
             }
         }
     }

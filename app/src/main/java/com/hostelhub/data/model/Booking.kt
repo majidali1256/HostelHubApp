@@ -1,6 +1,65 @@
 package com.hostelhub.data.model
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import java.lang.reflect.Type
+
+class FlexibleBookingHostelInfoDeserializer : JsonDeserializer<BookingHostelInfo?> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): BookingHostelInfo? {
+        if (json == null || json.isJsonNull) return null
+        if (json.isJsonObject) {
+            val obj = json.asJsonObject
+            val id = when {
+                obj.has("_id") && !obj.get("_id").isJsonNull -> obj.get("_id").asString
+                obj.has("id") && !obj.get("id").isJsonNull -> obj.get("id").asString
+                else -> ""
+            }
+            val name = if (obj.has("name") && !obj.get("name").isJsonNull) obj.get("name").asString else ""
+            val location = if (obj.has("location") && !obj.get("location").isJsonNull) obj.get("location").asString else ""
+            val price = if (obj.has("price") && !obj.get("price").isJsonNull) obj.get("price").asDouble else 0.0
+            return BookingHostelInfo(id = id, name = name, location = location, price = price)
+        }
+        if (json.isJsonPrimitive) {
+            return BookingHostelInfo(id = json.asString)
+        }
+        return null
+    }
+}
+
+class FlexibleBookingUserInfoDeserializer : JsonDeserializer<BookingUserInfo?> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): BookingUserInfo? {
+        if (json == null || json.isJsonNull) return null
+        if (json.isJsonObject) {
+            val obj = json.asJsonObject
+            val id = when {
+                obj.has("_id") && !obj.get("_id").isJsonNull -> obj.get("_id").asString
+                obj.has("id") && !obj.get("id").isJsonNull -> obj.get("id").asString
+                else -> ""
+            }
+            val firstName = if (obj.has("firstName") && !obj.get("firstName").isJsonNull) obj.get("firstName").asString else null
+            val lastName = if (obj.has("lastName") && !obj.get("lastName").isJsonNull) obj.get("lastName").asString else null
+            val email = if (obj.has("email") && !obj.get("email").isJsonNull) obj.get("email").asString else null
+            val contactNumber = if (obj.has("contactNumber") && !obj.get("contactNumber").isJsonNull) obj.get("contactNumber").asString else null
+            val profilePicture = if (obj.has("profilePicture") && !obj.get("profilePicture").isJsonNull) obj.get("profilePicture").asString else null
+            return BookingUserInfo(id = id, firstName = firstName, lastName = lastName, email = email, contactNumber = contactNumber, profilePicture = profilePicture)
+        }
+        if (json.isJsonPrimitive) {
+            return BookingUserInfo(id = json.asString)
+        }
+        return null
+    }
+}
 
 /**
  * Booking model matching the backend Booking schema
@@ -8,7 +67,9 @@ import com.google.gson.annotations.SerializedName
 data class Booking(
     @SerializedName(value = "id", alternate = ["_id"])
     val id: String = "",
+    @JsonAdapter(FlexibleBookingHostelInfoDeserializer::class)
     val hostelId: BookingHostelInfo? = null,
+    @JsonAdapter(FlexibleBookingUserInfoDeserializer::class)
     val customerId: BookingUserInfo? = null,
     val checkIn: String = "",
     val checkOut: String = "",

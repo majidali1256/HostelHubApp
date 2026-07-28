@@ -24,7 +24,7 @@ data class User(
     val rejectionReason: String? = null,
     val verificationDate: String? = null,
     val verificationDocuments: List<String>? = null,
-    val stayHistory: List<String>? = null,
+    val stayHistory: List<String?>? = null,
     val bankDetails: BankDetails? = null,
     val createdAt: String? = null,
     val updatedAt: String? = null
